@@ -98,6 +98,12 @@ public class onlineDeliveryDbContext : DbContext
             .WithMany()
             .HasForeignKey(dd => dd.DriverId);
 
+        modelBuilder.Entity<Product>()
+       .HasOne(p => p.Category)
+       .WithMany(c => c.Products)
+       .HasForeignKey(p => p.CategoryId)
+       .OnDelete(DeleteBehavior.Cascade);
+
     }
 }
 

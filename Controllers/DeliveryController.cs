@@ -12,17 +12,46 @@ public class DeliveryController : ControllerBase
         _context = context;
     }
 
+    // GET all deliveries
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Delivery>>> GetDelivery()
+    public async Task<ActionResult<IEnumerable<Delivery>>> GetDeliveries()
     {
-        return await _context.Deliveries.ToListAsync();
+        return await _context.Deliveries
+            .Include(d => d.Order) // optional
+            .ToListAsync();
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Delivery>> CreateDelivery(Delivery delivery)
+    // GET single delivery by ID
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Delivery>> GetDelivery(int id)
     {
-        _context.Deliveries.Add(delivery);
+        var delivery = await _context.Deliveries
+            .Include(d => d.Order) // optional
+            .FirstOrDefaultAsync(d => d.DeliveryId == id);
+
+        if (delivery == null)
+            return NotFound();
+
+        return delivery;
+    }
+
+    // POST: create delivery
+    [HttpPost]
+    public async Task<ActionResult<Delivery>> CreateDelivery([FromBody] Delivery delivery)
+    {
+        var newDelivery = new Delivery
+        {
+            OrdersId = delivery.OrdersId,
+            DriverId = delivery.DriverId,
+            customersName = delivery.customersName,
+            customersAddress = delivery.customersAddress,
+            DeliveryDate = delivery.DeliveryDate
+        };
+
+        _context.Deliveries.Add(newDelivery);
         await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetDelivery), new { id = delivery.DeliveryId }, delivery);
+
+        // Return the single delivery
+        return CreatedAtAction(nameof(GetDelivery), new { id = newDelivery.DeliveryId }, newDelivery);
     }
 }

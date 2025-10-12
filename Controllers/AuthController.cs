@@ -25,7 +25,9 @@ public class AuthController : ControllerBase
         {
             user.Id,
             user.Username,
-            user.Password,
+            user.firstname,
+            user.lastname,
+            user.address
         });
     }
 
@@ -42,7 +44,9 @@ public class AuthController : ControllerBase
         {
             user.Id,
             user.Username,
-            user.Password,
+            user.firstname,
+            user.lastname,
+            user.address
         });
     }
 
@@ -57,7 +61,10 @@ public class AuthController : ControllerBase
 
         return Ok(new
         {
-            user.Username
+            user.Username,
+            user.FirstName,
+            user.LastName,
+            user.Address
         });
     }
 }
